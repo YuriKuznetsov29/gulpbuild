@@ -1,7 +1,7 @@
-import fileinclude from "gulp-file-include";
-import webphtml from "gulp-webp-html-nosvg";
-import versionNumber from "gulp-version-number";
-import pug from "gulp-pug";
+import fileinclude from "gulp-file-include"
+import webphtml from "gulp-webp-html-nosvg"
+import versionNumber from "gulp-version-number"
+import pug from "gulp-pug"
 
 export const html = () => {
     return (
@@ -25,23 +25,26 @@ export const html = () => {
                 })
             )
             .pipe(app.plugins.replace(/@img\//g, "img/"))
-            .pipe(webphtml())
+            .pipe(app.plugins.if(app.isProd, webphtml()))
             // .pipe(app.gulp.dest("./public/"))
             .pipe(
-                versionNumber({
-                    value: "%DT%",
-                    replaces: [[/#{VERSION_REPlACE}#/g, "%TS%"]],
-                    append: {
-                        key: "_v",
-                        cover: 0,
-                        to: ["css", "js"],
-                    },
-                    output: {
-                        file: "gulp/version.json",
-                    },
-                })
+                app.plugins.if(
+                    app.isProd,
+                    versionNumber({
+                        value: "%DT%",
+                        replaces: [[/#{VERSION_REPlACE}#/g, "%TS%"]],
+                        append: {
+                            key: "_v",
+                            cover: 0,
+                            to: ["css", "js"],
+                        },
+                        output: {
+                            file: "gulp/version.json",
+                        },
+                    })
+                )
             )
             .pipe(app.gulp.dest(app.path.build.html))
             .pipe(app.plugins.browsersync.stream())
-    );
-};
+    )
+}
